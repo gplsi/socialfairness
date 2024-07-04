@@ -1,0 +1,34 @@
+version: "3.4"
+
+services:
+ web:
+   image: node:alpine
+   container_name: socialfairness-web
+   entrypoint: /bin/sh
+   restart: always
+   ports:
+     - 8107:8000
+   working_dir: /srv/app
+   volumes:
+     - type: bind
+       source: ./
+       target: /srv/app
+   tty: true
+ api:
+   build: ./socialfairness-api
+   command: gunicorn -w 2 -b 0.0.0.0:8000 --worker-class uvicorn.workers.UvicornWorker -t 3600 app.main:app
+   volumes:
+     - ./socialfairness-api/app:/app
+     - /dev/shm:/dev/shm
+   restart: always
+   ports:
+      - 8105:8000
+ models:
+   build: ./socialfairness-models
+   command: gunicorn -w 2 -b 0.0.0.0:8000 --worker-class uvicorn.workers.UvicornWorker -t 3600 app.main:app
+   volumes:
+     - ./socialfairness-models/app:/app
+     - /dev/shm:/dev/shm
+   restart: always
+   ports:
+      - 8108:8000
