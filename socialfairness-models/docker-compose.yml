@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    command: gunicorn -w 2 -b 0.0.0.0:8000 --worker-class uvicorn.workers.UvicornWorker -t 3600 app.main:app
+    volumes:
+      - .:/app
+      - /dev/shm:/dev/shm
+    ports:
+      - 8108:8000
